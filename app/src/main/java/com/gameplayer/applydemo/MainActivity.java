@@ -46,15 +46,15 @@ public class MainActivity extends AppCompatActivity {
 			public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 				super.onScrolled(recyclerView, dx, dy);
 				int firstItemPosition = layoutManager.findFirstVisibleItemPosition();
-				Log.i(TAG, "onScrolled: " + firstItemPosition);
+				Log.i(TAG, "onScrolled: " + firstItemPosition + ", dy " + dy + " , centerPosition= " + centerPosition);
 				if (centerPosition - 2 == firstItemPosition) {
 					if (dy >= 0) {
-						View shrinkView = recyclerView.getChildAt(centerPosition);
-						View expandView = recyclerView.getChildAt(centerPosition + 1);
+						View shrinkView = rvDemos.getChildAt(2);
+						View expandView = rvDemos.getChildAt(3);
 						shrinkAndExpand(shrinkView, expandView, dy);
 					} else {
-						View shrinkView = recyclerView.getChildAt(centerPosition);
-						View expandView = recyclerView.getChildAt(centerPosition - 1);
+						View shrinkView = rvDemos.getChildAt(2);
+						View expandView = rvDemos.getChildAt(1);
 						shrinkAndExpand(shrinkView, expandView, Math.abs(dy));
 					}
 				} else {
@@ -68,10 +68,22 @@ public class MainActivity extends AppCompatActivity {
 	private void shrinkAndExpand(View shrinkView, View expandView, int dy) {
 		ViewGroup.LayoutParams shrinkLayoutParams = shrinkView.getLayoutParams();
 		shrinkLayoutParams.height = shrinkLayoutParams.height - dy;
-		shrinkView.setLayoutParams(shrinkLayoutParams);
+		if (valiableHeight(shrinkLayoutParams.height)) {
+			shrinkView.setLayoutParams(shrinkLayoutParams);
+		}
 		ViewGroup.LayoutParams expandLayoutParams = expandView.getLayoutParams();
 		expandLayoutParams.height = expandLayoutParams.height + dy;
-		expandView.setLayoutParams(expandLayoutParams);
+		if (valiableHeight(expandLayoutParams.height)) {
+			expandView.setLayoutParams(expandLayoutParams);
+		}
+	}
+
+	private boolean valiableHeight(int mheight) {
+		if (mheight >= height && mheight < height * 2) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	private void initData() {
