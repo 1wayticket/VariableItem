@@ -46,19 +46,17 @@ public class MainActivity extends AppCompatActivity {
 			public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 				super.onScrolled(recyclerView, dx, dy);
 				int firstItemPosition = layoutManager.findFirstVisibleItemPosition();
-				Log.i(TAG, "onScrolled: " + firstItemPosition + ", dy " + dy + " , centerPosition= " + centerPosition);
-				if (centerPosition - 2 == firstItemPosition) {
-					if (dy >= 0) {
-						View shrinkView = rvDemos.getChildAt(2);
-						View expandView = rvDemos.getChildAt(3);
-						shrinkAndExpand(shrinkView, expandView, dy);
-					} else {
-						View shrinkView = rvDemos.getChildAt(2);
-						View expandView = rvDemos.getChildAt(1);
-						shrinkAndExpand(shrinkView, expandView, Math.abs(dy));
-					}
-				} else {
+				if (centerPosition - 2 != firstItemPosition) {
 					centerPosition = firstItemPosition + 2;
+				}
+				if (dy > 0) {
+					View shrinkView = recyclerView.getChildAt(2);
+					View expandView = recyclerView.getChildAt(3);
+					shrinkAndExpand(shrinkView, expandView, dy);
+				} else if (dy < 0) {
+					View shrinkView = recyclerView.getChildAt(3);
+					View expandView = recyclerView.getChildAt(2);
+					shrinkAndExpand(shrinkView, expandView, Math.abs(dy));
 				}
 
 			}
@@ -68,14 +66,16 @@ public class MainActivity extends AppCompatActivity {
 	private void shrinkAndExpand(View shrinkView, View expandView, int dy) {
 		ViewGroup.LayoutParams shrinkLayoutParams = shrinkView.getLayoutParams();
 		shrinkLayoutParams.height = shrinkLayoutParams.height - dy;
-		if (valiableHeight(shrinkLayoutParams.height)) {
-			shrinkView.setLayoutParams(shrinkLayoutParams);
+		if (!valiableHeight(shrinkLayoutParams.height)) {
+			shrinkLayoutParams.height = height;
 		}
+		shrinkView.setLayoutParams(shrinkLayoutParams);
 		ViewGroup.LayoutParams expandLayoutParams = expandView.getLayoutParams();
 		expandLayoutParams.height = expandLayoutParams.height + dy;
-		if (valiableHeight(expandLayoutParams.height)) {
-			expandView.setLayoutParams(expandLayoutParams);
+		if (!valiableHeight(expandLayoutParams.height)) {
+			expandLayoutParams.height = height * 2;
 		}
+		expandView.setLayoutParams(expandLayoutParams);
 	}
 
 	private boolean valiableHeight(int mheight) {
@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
 	private void initData() {
 		height = DensityUtils.getWindowHeight(MainActivity.this) / 6;
 		responseList = new ArrayList<>();
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 20; i++) {
 			DemoResponse demoResponse = new DemoResponse();
 			demoResponse.setContent("这是内容这是内容这是内容" + i);
 			responseList.add(demoResponse);
@@ -122,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
 		public void onBindViewHolder(ViewHolder holder, int position) {
 			ViewGroup.LayoutParams layoutParams = holder.itemView.getLayoutParams();
 			if (holder.getAdapterPosition() == centerPosition) {
+				Log.i(TAG, "onBindViewHolder: " + centerPosition);
 				layoutParams.height = height * 2;
 			} else {
 				layoutParams.height = height;
