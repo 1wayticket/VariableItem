@@ -1,3 +1,14 @@
 <resources>
 	<string name="app_name">ApplyDemo</string>
+	<string-array name="ad_list">
+		<item>@drawable/ad1</item>
+		<item>@drawable/ad2</item>
+		<item>@drawable/ad3</item>
+	</string-array>
+
+	<string-array name="content_list">
+		<item>《走向共和》开头为什么李鸿章不担心北洋海军，却担心鹦鹉不说话？</item>
+		<item>“你卖一台宝马有一万块提成吧？”——让4S店人员汗颜的语录！</item>
+		<item>脱口秀 池子 没见过这么丑的叔叔，只能叫阿姨了！</item>
+	</string-array>
 </resources>

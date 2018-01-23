@@ -9,7 +9,7 @@ package com.gameplayer.applydemo;
 
 public class DemoResponse {
 	private String content;
-	private String pic;
+	private int picResId;
 
 	public String getContent() {
 		return content;
@@ -19,11 +19,11 @@ public class DemoResponse {
 		this.content = content;
 	}
 
-	public String getPic() {
-		return pic;
+	public int getPic() {
+		return picResId;
 	}
 
-	public void setPic(String pic) {
-		this.pic = pic;
+	public void setPic(int pic) {
+		this.picResId = pic;
 	}
 }

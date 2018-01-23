@@ -1,11 +1,11 @@
 package com.gameplayer.applydemo;
 
 import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
+import android.content.res.TypedArray;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +21,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
 	private static final String TAG = "chen";
-	private ProgressBar pgLoading;
+	private ProgressBar pbLoading;
 	private RecyclerView rvDemos;
 	private List<DemoResponse> responseList;
 	private DemoAdapter demoAdapter;
@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
 	private void initView() {
 		rvDemos = (RecyclerView) findViewById(R.id.rv_demos);
-		pgLoading = findViewById(R.id.pb_loading);
+		pbLoading = findViewById(R.id.pb_loading);
 		final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
 		rvDemos.setLayoutManager(layoutManager);
 		rvDemos.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
 				if (centerPosition - 2 != firstItemPosition) {
 					centerPosition = firstItemPosition + 2;
 				}
+
 				if (dy > 0) {
 					View shrinkView = recyclerView.getChildAt(2);
 					View expandView = recyclerView.getChildAt(3);
@@ -58,7 +59,10 @@ public class MainActivity extends AppCompatActivity {
 					View expandView = recyclerView.getChildAt(2);
 					shrinkAndExpand(shrinkView, expandView, Math.abs(dy));
 				}
-
+				//todo 如果快速滑动到最后,会导致滑动回调只调用一次,这里强制调整ItemView
+				if (layoutManager.findLastVisibleItemPosition() == demoAdapter.getItemCount() - 1 && layoutManager.findFirstVisibleItemPosition() == demoAdapter.getItemCount() - 5) {
+					demoAdapter.notifyDataSetChanged();
+				}
 			}
 		});
 	}
@@ -89,9 +93,12 @@ public class MainActivity extends AppCompatActivity {
 	private void initData() {
 		height = DensityUtils.getWindowHeight(MainActivity.this) / 6;
 		responseList = new ArrayList<>();
+		TypedArray adList = getResources().obtainTypedArray(R.array.ad_list);
+		TypedArray array = getResources().obtainTypedArray(R.array.content_list);
 		for (int i = 0; i < 20; i++) {
 			DemoResponse demoResponse = new DemoResponse();
-			demoResponse.setContent("这是内容这是内容这是内容" + i);
+			demoResponse.setContent(array.getString(i % 3));
+			demoResponse.setPic(adList.getResourceId(i % 3, R.drawable.ad1));
 			responseList.add(demoResponse);
 		}
 		demoAdapter = new DemoAdapter(responseList, this);
@@ -122,14 +129,13 @@ public class MainActivity extends AppCompatActivity {
 		public void onBindViewHolder(ViewHolder holder, int position) {
 			ViewGroup.LayoutParams layoutParams = holder.itemView.getLayoutParams();
 			if (holder.getAdapterPosition() == centerPosition) {
-				Log.i(TAG, "onBindViewHolder: " + centerPosition);
 				layoutParams.height = height * 2;
 			} else {
 				layoutParams.height = height;
 			}
 			holder.itemView.setLayoutParams(layoutParams);
-			holder.ivPic.setImageResource(R.drawable.ad1);
 			DemoResponse demoResponse = responses.get(position);
+			holder.ivPic.setImageResource(demoResponse.getPic());
 			holder.tvContent.setText(demoResponse.getContent());
 		}
 
